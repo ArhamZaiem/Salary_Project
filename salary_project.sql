@@ -185,8 +185,8 @@ group by gender
 
 select company_state
 , count(id)
-, min(salary) min_salary
-, max(salary) max_salary
+, min(salary) minimum_salary
+, max(salary) maximum_salary
 , round(avg(salary), 2) as average_salary
 from df_employee
 group by company_state
