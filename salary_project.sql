@@ -1,3 +1,6 @@
+/* Selecting everything from the tables 
+in order to have a broader understanding of the cloumns, rows and values in the table*/
+
 select *
 from companies
 
@@ -9,7 +12,10 @@ from functions
 
 select *
 from employees
-
+  
+/* Tranferring of data into a temporaray table 
+to protect the original data from any type of mishappening*/
+  
 select *
 into emp_dataset
 from salaries
@@ -23,6 +29,9 @@ on salaries.employee_id = employees.employee_code_emp
 select *
 from emp_dataset
 
+/* Joining ID and DATE column to make a unique column which will serve as a primary column into the table
+as salary cannot be given to a employee on the same date two times, changing DATE type from timestamp to date type
+and tranferring all the relevant informations into a new temporary table*/
 
 select CONCAT (employee_id, cast (date as date)) as id
 , cast (date as date) pay_month
@@ -43,8 +52,12 @@ from emp_dataset
 select *
 from df_employee
 
+/*Renaming the gender table for better reading.*/
+
 sp_rename 'df_employee.GEN_M_F', 'gender', 'column'
 
+/*Trimming all unnecessary spaces from the table.*/
+  
 update df_employee
 set id = ltrim(rtrim(id))
 , pay_month = ltrim(rtrim(pay_month))
@@ -60,6 +73,8 @@ set id = ltrim(rtrim(id))
 , company_type = ltrim(rtrim(company_type))
 , const_site_category = ltrim(rtrim(const_site_category))
 
+/*Finding out all the null values in the table.*/
+  
 select *
 from df_employee
 where id is null
@@ -76,6 +91,8 @@ or company_state is null
 or company_type is null
 or const_site_category is null
 
+/*Only SALARY and CONST_SITE_CATEGORY column contained null values*/
+  
 select count(*) missing_salary_count 
 from df_employee
 where salary is null
@@ -84,6 +101,9 @@ select count(*) missing_const_site_category_count
 from df_employee
 where const_site_category is null
 
+/*After talking to HR, it was told to me to delete all the null values from the table 
+  and salary will not the given to people in null values row*/
+  
 delete from df_employee
 where salary is null
 delete from df_employee
@@ -91,6 +111,7 @@ where const_site_category is null
 
 select * from df_employee
 
+  /*Checking the distinct values in the table to find irregularities and fixing it.*/
 
 select distinct(gender)
 from df_employee 
@@ -101,7 +122,6 @@ when 'M' then 'Male'
 when 'F' then 'Female'
 else 'gender'
 end)
-
 
 select distinct(const_site_category)
 from df_employee 
@@ -117,12 +137,14 @@ update df_employee
 set company_state = 'Goias'
 where company_state = 'GOIAS'
 
-
+/*Checking of duplicate values.*/
+  
 select distinct(id), count(id) duplicates
 from df_employee
 group by id
 having count(id) > 1 
 
+/*Deleting all duplicate values.*/
 
 with cte as 
 (select *,
